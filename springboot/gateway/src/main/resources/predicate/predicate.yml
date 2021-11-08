@@ -1,0 +1,68 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: after_route
+            uri: lb://ms-user
+            predicates:
+              # 当且仅当请求时的时间After配置的时间时，才会转发到用户微服务
+              # 目前配置不会进该路由配置，所以返回404
+              # 将时间改成 < now的时间，则访问localhost:8040/** -> ms-user/**
+              # eg. 访问http://localhost:8040/users/1 -> ms-user/users/1
+              - After=2030-01-20T17:42:47.789-07:00[America/Denver]
+        - id: before_route
+            uri: lb://ms-user
+            predicates:
+              # 当且仅当请求时的时间Before配置的时间时，才会转发到用户微服务
+              # 目前配置不会进该路由配置，所以返回404
+              # 将时间改成 > now的时间，则访问localhost:8040/** -> ms-user/**
+              # eg. 访问http://localhost:8040/users/1 -> ms-user/users/1
+              - Before=2018-01-20T17:42:47.789-07:00[America/Denver]
+        - id: between_route
+            uri: lb://ms-user
+            predicates:
+              # 当且仅当请求时的时间Between配置的时间时，才会转发到用户微服务
+              # 因此，访问localhost:8040/** -> ms-user/**
+              # eg. 访问http://localhost:8040/users/1 -> ms-user/users/1
+              - Between=2017-01-20T17:42:47.789-07:00[America/Denver], 2027-01-21T17:42:47.789-07:00[America/Denver]
+        - id: cookie_route
+            uri: lb://ms-user
+            predicates:
+              # 当且仅当带有名为somecookie，并且值符合正则ch.p的Cookie时，才会转发到用户微服务
+              # 如Cookie满足条件，则访问http://localhost:8040/** -> ms-user/**
+              # eg. 访问http://localhost:8040/users/1 -> ms-user/users/1
+              - Cookie=somecookie, ch.p
+        - id: header_route
+            uri: lb://ms-user
+            predicates:
+              # 当且仅当带有名为X-Request-Id，并且值符合正则\d+的Header时，才会转发到用户微服务
+              # 如Header满足条件，则访问http://localhost:8040/** -> ms-user/**
+              # eg. 访问http://localhost:8040/users/1 -> ms-user/users/1
+              - Header=X-Request-Id, \d+
+        - id: host_route
+            uri: lb://ms-user
+            predicates:
+              # 当且仅当名为Host的Header符合**.somehost.org或**.anotherhost.org时，才会转发用户微服务
+              # 如Host满足条件，则访问http://localhost:8040/** -> ms-user/**
+              # eg. 访问http://localhost:8040/users/1 -> ms-user/users/1
+              - Host=**.somehost.org,**.anotherhost.org
+        - id: method_route
+            uri: lb://ms-user
+            predicates:
+              # 当且仅当HTTP请求方法是GET时，才会转发用户微服务
+              # 如请求方法满足条件，访问http://localhost:8040/** -> ms-user/**
+              # eg. 访问http://localhost:8040/users/1 -> ms-user/users/1
+              - Method=GET
+        - id: path_route
+            uri: lb://ms-user
+            predicates:
+              # 当且仅当访问路径是/users/*或者/some-path/**，才会转发用户微服务
+              # segment是一个特殊的占位符，单层路径匹配
+              # eg. 访问http://localhost:8040/users/1 -> ms-user/users/1
+              - Path=/users/{segment},/some-path/**
+        - id: query_route
+            uri: lb://ms-user
+            predicates:
+              # 当且仅当请求带有baz的参数，才会转发到用户微服务
+              # eg. 访问http://localhost:8040/users/1?baz=xx -> ms-user的/users/1
+              - Query=baz

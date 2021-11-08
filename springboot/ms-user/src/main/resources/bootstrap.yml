@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: ms-user
+  cloud:
+    consul:
+      host: 192.168.0.101
+      port: 8500
+      config:
+        format: yaml
+        watch:
+          enabled: true
+  profiles:
+    active: dev

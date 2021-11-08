@@ -1,0 +1,58 @@
+server:
+  port: 8080
+spring:
+  rabbitmq:
+    host: 192.168.0.101
+    port: 5672
+    username: root
+    password: root
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/ms_user?serverTimezone=UTC
+    hikari:
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  application:
+    #注册到consul上的服务名称
+    #分隔符用中划线而不是下划线
+    #如果你的服务发现用的是consul，用了下划线会被强制转换为中划线
+    #如果服务发现用的不是consul，用了下划线有可能服务之间无法正常调用
+    #比如Ribbon，默认会把服务名作为主机名，而主机名中下换线是不合法的
+    name: ms-user
+  cloud:
+    consul:
+      discovery:
+        #serviceName: ms-user    # 注册到consul的服务名称
+        register-health-check: true
+        health-check-path: /actuator/health
+        #url的优先级比path高
+        #health-check-url: http://localhost:8081/actuator/health
+        prefer-ip-address: true
+        tags: location=chongqing
+        instance-id: ${spring.application.name}-${server.port}-${spring.cloud.client.ip-address} #${spring.application.name}-${server.port}-${spring.cloud.client.hostname}
+    inetutils:
+        preferred-networks:
+          - 192.168
+          - 10.10
+    stream:
+      bindings:
+        input:
+          # 指定topic
+          destination: lesson-buy
+          #同一条消息，相同group下只会有1个实例去消费，且负载均衡算法是轮询
+          group: g1
+        myInput:
+          destination: stream-test2
+          group: g2
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springboot/gateway/gateway.iml" filepath="$PROJECT_DIR$/springboot/gateway/gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mgrsite/mgrsite.iml" filepath="$PROJECT_DIR$/mgrsite/mgrsite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springboot/ms-class/ms-class.iml" filepath="$PROJECT_DIR$/springboot/ms-class/ms-class.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springboot/ms-user/ms-user.iml" filepath="$PROJECT_DIR$/springboot/ms-user/ms-user.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springboot/springboot.iml" filepath="$PROJECT_DIR$/springboot/springboot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/springgbootlearning.iml" filepath="$PROJECT_DIR$/.idea/springgbootlearning.iml" />
+    </modules>
+  </component>
+</project>
