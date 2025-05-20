@@ -1,0 +1,121 @@
+server:
+  port: 8082
+spring:
+  rabbitmq:
+    host: 192.168.0.101
+    port: 5672
+    username: root
+    password: root
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/ms_class?useSSL=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    hikari:
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  cloud:
+    consul:
+      discovery:
+        #serviceName: ms-class    # 注册到consul的服务名称
+        register-health-check: true
+        health-check-path: /actuator/health
+        #url的优先级比path高
+        #health-check-url: http://localhost:8082/actuator/health
+        prefer-ip-address: true
+        tags: location=chongqing
+        instance-id: ${spring.application.name}-${server.port}-${spring.cloud.client.ip-address} #${spring.application.name}-${server.port}-${spring.cloud.client.hostname}
+    inetutils:
+      preferred-networks:
+        - 192.168
+        - 10.10
+    stream:
+      bindings:
+        output:
+          destination: lesson-buy
+        myOutput:
+          destination: stream-test2
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  health:
+    ratelimiters:
+      enabled: true
+    circuitbreakers:
+      enabled: true
+
+first:
+  config: qwer
+#ms-user:   #指定微服务的ribbon配置
+#  ribbon:
+#   NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+ribbon:
+  eager-load:
+    enabled: true #开启饥饿加载
+    clients: ms-user #指定饥饿加载的微服务
+
+logging:
+  level:
+    springboot.learning.msclass.feign.MsUserFeignClient: debug
+
+feign:
+  client:
+    config:
+      #ms-user:
+      default:
+        loggerLevel: full
+  httpclient: #feign的性能调优：1.使用连接池；2.何时设置日志级别，能为none就没必要basic
+    enabled: true
+    max-connections: 200
+    max-connections-per-route: 50
+
+resilience4j:
+  timelimiter:
+    metrics:
+      enabled: true
+  retry:
+    metrics:
+      enabled: true
+  circuitbreaker:
+    metrics:
+      enabled: true
+    instances:
+      buyById:
+        registerHealthIndicator: true
+  ratelimiter:
+    metrics:
+      enabled: true
+    configs:
+      default:
+        limitRefreshPeriod: 1s
+        limitForPeriod: 1
+      share:
+        limitForPeriod: 2
+    instances:
+      buyById:
+        #刷新周期内允许的最大频次
+        #limitForPeriod: 1
+        baseConfig: share #实现配置的共享和重用
+        #刷新周期
+        limitRefreshPeriod: 1s
+        #超时时线程等待许可的时间,默认5s
+        timeoutDuration: 0 #具体微服务下没有设置的属性，default中的也不会生效，而是会使用代码中设置的默认值
+        registerHealthIndicator: true
+  bulkhead:
+    metrics:
+      enabled: true
+    instances:
+      buyById:
+        #最大并发请求数，默认25
+        maxConcurrentCalls: 10
+        #仓壁饱和时最大等待时间，默认0
+        maxWaitDuration: 10ms
+        #事件缓冲区大小
+        eventConsumerBufferSize: 1

@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "first.cloud.consul.discovery.tags",
+      "type": "java.lang.String",
+      "description": "Description for first.cloud.consul.discovery.tags."
+    }
+  ]
+}

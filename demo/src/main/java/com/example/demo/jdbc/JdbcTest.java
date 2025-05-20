@@ -61,8 +61,8 @@ public class JdbcTest {
         PreparedStatement statement = connection.prepareStatement(sql);
         // 第一次
         statement.execute();
-        statement.getResultSet();
-
+        ResultSet resultSet = statement.getResultSet();
+        System.out.println(resultSet);
 
     }
 }

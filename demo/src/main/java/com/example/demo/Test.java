@@ -20,6 +20,31 @@ public class Test {
 		}
 	}
 	public static void main(String[] args) {
-		System.out.println(factorial(3));
+		//System.out.println(factorial(3));
+		//new Test().foo(new StringBuffer(),0);
+		int i = 3 | 1;
+		int j = 3 & 1;
+		int k = 3 ^ 1;
+		System.out.println(i);
+		System.out.println(j);
+		System.out.println(k);
+	}
+	public void foo(StringBuffer buffer, int len){
+		String[] arr = new String[]{"0", "5", "0", "4", "0", "3", "0", "2", "0", "1"};
+		new Thread(() -> {
+			if(len < 10) {
+				if (arr[len] == "0") {
+					buffer.append("A");
+				} else if (arr[len].equals("0")) {
+					buffer.append("B");
+				} else {
+					buffer.append(arr[len]);
+				}
+				foo(buffer, len + 1);
+			} else {
+				System.out.println(buffer.toString());
+			}
+		}).start();
+
 	}
 }

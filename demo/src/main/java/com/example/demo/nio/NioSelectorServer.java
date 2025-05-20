@@ -39,10 +39,11 @@ public class NioSelectorServer {
 						System.out.println("客户端连接成功！");
 					} else if (key.isReadable()) {
 						SocketChannel socketChannel = (SocketChannel) key.channel();
-						ByteBuffer byteBuffer = ByteBuffer.allocate(128);
+						ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
 						int len = socketChannel.read(byteBuffer);
 						if (len > 0) {
-							System.out.println("接收到消息： " + new String(byteBuffer.array()));
+							byteBuffer.flip();
+							System.out.println("接收到消息： " + new String(byteBuffer.array()).trim());
 						} else if (len == -1) {
 							System.out.println("客户端断开连接！");
 							socketChannel.close();

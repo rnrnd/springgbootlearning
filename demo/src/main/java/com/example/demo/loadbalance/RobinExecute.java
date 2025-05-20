@@ -7,9 +7,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class RobinExecute {
 	/** 线程使用完不会清除该变量,会一直保留着，由于线程 池化所以不用担心内存泄漏 **/
-	private ThreadLocal<SmoothWeightRoundRobin> weightRoundRobinTl = new ThreadLocal<>();
+	private final ThreadLocal<SmoothWeightRoundRobin> weightRoundRobinTl = new ThreadLocal<>();
 
-	private ReentrantLock lock = new ReentrantLock();
+	private final ReentrantLock lock = new ReentrantLock();
 
 	/** 为什么添加volatile，是因为 ReentrantLock 并不保证内存可见性 **/
 	private volatile SmoothWeightRoundRobin smoothWeightRoundRobin;
@@ -19,7 +19,7 @@ public class RobinExecute {
 		RobinExecute robinExecute = new RobinExecute();
 
 		/** ==================    TheadLocal   ========================**/
-		robinExecute.acquireWeightRoundRobinOfTheadLocal().getServer();
+		robinExecute.acquireWeightRoundRobinOfTheadLocal().getServerContext();
 
 		/** ==================    ReentrantLock 可重入锁   ========================**/
 		robinExecute.getLock().lock();  //notice: 注意此锁会无休止的等待资源，如果使用此锁，无比保证资源能够被拿到
@@ -38,17 +38,17 @@ public class RobinExecute {
 	 * notice:
 	 * @return
 	 */
-	public Server acquireWeightRoundRobinOfLock() {
+	public ServerContext acquireWeightRoundRobinOfLock() {
 		if (smoothWeightRoundRobin == null) {
 			SmoothWeightRoundRobin weightRoundRobin = new SmoothWeightRoundRobin();
-			List<SmoothWeightRoundRobinServer> servers = new ArrayList<>();
-			servers.add(new SmoothWeightRoundRobinServer("191", 1, 0));
-			servers.add(new SmoothWeightRoundRobinServer("192", 2, 0));
-			servers.add(new SmoothWeightRoundRobinServer("194", 4, 0));
+			List<SmoothWeightRoundRobinServerContext> servers = new ArrayList<>();
+			servers.add(new SmoothWeightRoundRobinServerContext("191", 1, 0));
+			servers.add(new SmoothWeightRoundRobinServerContext("192", 2, 0));
+			servers.add(new SmoothWeightRoundRobinServerContext("194", 4, 0));
 			weightRoundRobin.init(servers);
 			smoothWeightRoundRobin = weightRoundRobin;
 		}
-		return smoothWeightRoundRobin.getServer();
+		return smoothWeightRoundRobin.getServerContext();
 	}
 
 	/**
@@ -60,10 +60,10 @@ public class RobinExecute {
 		return Optional.ofNullable(weightRoundRobinTl.get())
 				.orElseGet(() -> {
 					SmoothWeightRoundRobin weightRoundRobin = new SmoothWeightRoundRobin();
-					List<SmoothWeightRoundRobinServer> servers = new ArrayList<>();
-					servers.add(new SmoothWeightRoundRobinServer("191", 1, 0));
-					servers.add(new SmoothWeightRoundRobinServer("192", 2, 0));
-					servers.add(new SmoothWeightRoundRobinServer("194", 4, 0));
+					List<SmoothWeightRoundRobinServerContext> servers = new ArrayList<>();
+					servers.add(new SmoothWeightRoundRobinServerContext("191", 1, 0));
+					servers.add(new SmoothWeightRoundRobinServerContext("192", 2, 0));
+					servers.add(new SmoothWeightRoundRobinServerContext("194", 4, 0));
 					weightRoundRobin.init(servers);
 					weightRoundRobinTl.set(weightRoundRobin);
 					return weightRoundRobin;
